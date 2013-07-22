@@ -1,0 +1,9 @@
+<host>
+  <name>DefaultHost</name>
+  <description>The default host (grey-vdsa.eng.lab.tlv.redhat.com)</description>
+  <address>10.35.16.211</address>
+  <cluster>
+    <name>TestCluster</name>
+  </cluster>
+  <root_password>qum5net</root_password>
+</host>
