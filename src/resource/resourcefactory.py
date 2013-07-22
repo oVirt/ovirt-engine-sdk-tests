@@ -29,7 +29,11 @@ class ResourceFactory(Singleton):
         clazz = getattr(params, typ.__name__)
         if not clazz:
             raise NotFoundError(typ, 'type')
-        xm_body = ResourceFactory.getConfigManager().get(typ.__name__.lower()).get('resource')
+        
+        xm_body = ResourceFactory.getConfigManager()\
+                                 .get(typ.__name__.lower())\
+                                 .get('resource')
+                                 
         params_holder = params.parseString(xm_body)
 
         if type(params_holder) != typ:
