@@ -17,7 +17,7 @@ class resources(object):
                 rm_class = ResourceManager.getResourceManager(rm)
                 if rm_class:
                     rm_instance = rm_class()
-                    if rm_instance.get():
+                    if rm_instance.get(get_only=True):
                         rm_instance.remove()
                         # TODO: use **kwargs for private init
                 else:
