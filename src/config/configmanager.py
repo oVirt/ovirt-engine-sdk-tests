@@ -24,41 +24,43 @@ from src.errors.confignotfounderror import ConfigNotFoundError
 from src.utils.typeutils import TypeUtils
 from src.utils.dictutils import DictUtils
 import types
+from src.utils.fileutils import FileUtils
+from src.errors.notfoundresourceconfigerror import NotFoundResourceConfigError
 # from src.infrastructure.singleton import singleton
 
 # @singleton
 class ConfigManager(Singleton):
 
     __dict = None
+    __custom_dict = None
     __lock = threading.RLock()
 
     INTERNAL_PROPERIES = ['__name__', 'create_on_demand']
     INTERNAL_SECTIONS = ['sdk', 'tests']
 
     # FIXME: fetch slash for platform
-    CONFIG_DIR = os.getcwd() + "/src/config/ini"
-    RESOURCES_CONFIG_DIR = os.getcwd() + "/src/config/resources"
+    CONFIG_DIR = os.getcwd() + os.sep + "src" + os.sep + "config" + os.sep + "ini"
+    CUSTOM_CONFIG_DIR = CONFIG_DIR + os.sep + "custom"
+
+    RESOURCES_CONFIG_DIR = os.getcwd() + os.sep + "src" + os.sep + "config" + os.sep + "resources"
+    CUSTOM_RESOURCES_CONFIG_DIR = RESOURCES_CONFIG_DIR + os.sep + "custom"
+
     CONFIG_FILE = "config.ini"
+    CUSTOM_CONFIG_FILE = "custom_config.ini"
 
     @staticmethod
-    def __loadConfigFile():
+    def __loadConfigFile(fname, error_on_not_found=True):
             """
             Load default values from a configuration file.
             """
-
-            fname = ConfigManager.CONFIG_DIR + \
-                    '/' + \
-                    ConfigManager.CONFIG_FILE
 
             cp = ConfigParser()
             if cp.read(fname):
                 ConfigManager.__normalalaizeParams(cp._sections)
                 ConfigManager.__injectResources(cp._sections)
                 return cp._sections
-            raise ConfigNotFoundError(
-                          ConfigManager.CONFIG_DIR,
-                          ConfigManager.CONFIG_FILE
-                  )
+            if error_on_not_found:
+                raise ConfigNotFoundError(fname)
 
     @staticmethod
     def get(key, failobj=None, exclude=None):
@@ -78,11 +80,27 @@ class ConfigManager(Singleton):
 
     @staticmethod
     def __getDict():
+        config_fname = ConfigManager.CONFIG_DIR + '/' + ConfigManager.CONFIG_FILE
+        custom_config_fname = ConfigManager.CUSTOM_CONFIG_DIR + '/' + ConfigManager.CUSTOM_CONFIG_FILE
+
         if not ConfigManager.__dict:
             with ConfigManager.__lock:
                 if not ConfigManager.__dict:
-                    ConfigManager.__dict = \
-                        OrderedDict(ConfigManager.__loadConfigFile())
+                    config = OrderedDict(
+                                         ConfigManager.__loadConfigFile(
+                                                        fname=config_fname
+                                                        )
+                                         )
+                    custom_config = OrderedDict(
+                                        ConfigManager.__loadConfigFile(
+                                                       fname=custom_config_fname,
+                                                       error_on_not_found=False
+                                                       )
+                                    )
+                    if config and custom_config:
+                        config.update(custom_config)
+                    ConfigManager.__dict = config
+
         return ConfigManager.__dict
 
 
@@ -104,15 +122,14 @@ class ConfigManager(Singleton):
                 sections[section]['resource'] = resource
 
     @staticmethod
-    def __loadResource(section):
-        fo = None
-        try:
-            # FIXME: fetch slash for platform
-            fo = open(
-                  ConfigManager.RESOURCES_CONFIG_DIR +
-                      "/" + section + ".xml",
-                  "r"
-            )
-            return fo.read()
-        finally:
-            if fo: fo.close()
+    def __loadResource(resource):
+
+        default_resourece = ConfigManager.RESOURCES_CONFIG_DIR + os.sep + resource + ".xml"
+        custom_resourece = ConfigManager.CUSTOM_RESOURCES_CONFIG_DIR + os.sep + resource + ".xml"
+
+        if os.path.isfile(custom_resourece) and os.path.exists(custom_resourece):
+            return FileUtils.getContent(custom_resourece)
+        elif os.path.isfile(default_resourece) and os.path.exists(default_resourece):
+            return FileUtils.getContent(default_resourece)
+        else:
+            raise NotFoundResourceConfigError(resource)
