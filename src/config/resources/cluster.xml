@@ -1,0 +1,23 @@
+<cluster>
+  <name>TestCluster</name>
+  <description>The default test cluster</description>
+  <data_center>
+    <name>TestDataCenter</name>
+  </data_center>
+  <memory_policy>
+    <overcommit percent="100" />
+    <transparent_hugepages>
+      <enabled>true</enabled>
+    </transparent_hugepages>
+  </memory_policy>
+  <scheduling_policy />
+  <version major="3" minor="3" />
+  <error_handling>
+    <on_error>migrate</on_error>
+  </error_handling>
+  <virt_service>true</virt_service>
+  <gluster_service>true</gluster_service>
+  <threads_as_cores>false</threads_as_cores>
+  <tunnel_migration>false</tunnel_migration>
+  <cpu id="Intel Conroe Family"/>
+</cluster>

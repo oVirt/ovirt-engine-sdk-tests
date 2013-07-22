@@ -1,0 +1,9 @@
+<data_center>
+  <name>TestDataCenter</name>
+  <description>The default test Data Center</description>
+  <storage_type>nfs</storage_type>
+  <version major="3" minor="3" />
+  <supported_versions>
+    <version major="3" minor="2" />
+  </supported_versions>
+</data_center>
