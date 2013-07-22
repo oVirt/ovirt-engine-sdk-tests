@@ -11,6 +11,7 @@ from ovirtsdk.xml import params
 from src.config.configmanager import ConfigManager
 from src.infrastructure.singleton import Singleton
 from src.errors.notfounderror import NotFoundError
+from src.errors.notcreatederror import NotCreatedError
 
 class AbstractResourceManager(Singleton):
 
@@ -54,6 +55,14 @@ class AbstractResourceManager(Singleton):
 
     def raiseNotFoundError(self):
         raise NotFoundError(self.getType(), self.getName())
+
+    def raiseNotCreatedError(self):
+        raise NotCreatedError(self.getType(), self.getName())
+
+    def injectExpectParam(self, kwargs):
+        if not kwargs:
+            kwargs = {}
+        kwargs['expect'] = '201-created'
 
     def isCreateOnDemand(self):
         """
