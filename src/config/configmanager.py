@@ -26,6 +26,9 @@ from src.utils.dictutils import DictUtils
 import types
 from src.utils.fileutils import FileUtils
 from src.errors.notfoundresourceconfigerror import NotFoundResourceConfigError
+from xml.etree import ElementTree
+import glob
+from src.utils.xmlutils import XmlUtils
 # from src.infrastructure.singleton import singleton
 
 # @singleton
@@ -127,9 +130,9 @@ class ConfigManager(Singleton):
         default_resourece = ConfigManager.RESOURCES_CONFIG_DIR + os.sep + resource + ".xml"
         custom_resourece = ConfigManager.CUSTOM_RESOURCES_CONFIG_DIR + os.sep + resource + ".xml"
 
-        if os.path.isfile(custom_resourece) and os.path.exists(custom_resourece):
-            return FileUtils.getContent(custom_resourece)
-        elif os.path.isfile(default_resourece) and os.path.exists(default_resourece):
+        if os.path.exists(default_resourece) and os.path.isfile(default_resourece):
+            if os.path.exists(custom_resourece) and os.path.isfile(custom_resourece):
+                return XmlUtils.combine([default_resourece, custom_resourece])
             return FileUtils.getContent(default_resourece)
         else:
             raise NotFoundResourceConfigError(resource)

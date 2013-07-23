@@ -1,13 +1,5 @@
 <storage_domain>
-  <name>DefaultNfsSD</name>
-  <description>The default storagedomain</description>
-  <type>data</type>
   <storage>
-    <type>nfs</type>
     <path>/net/smamit.eng.lab.tlv.redhat.com/volumes/smamit/frontend/mpastern/3.3/nfs/1</path>
   </storage>
-  <host>
-      <name>CustomHost</name>
-  </host>
-  <format>false</format>
 </storage_domain>
