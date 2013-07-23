@@ -2,11 +2,12 @@
   <name>DefaultNfsSD</name>
   <description>The default StorageDomain</description>
   <type>data</type>
-  <storage>
-    <type>nfs</type>
-  </storage>
   <host>
-      <name>CustomHost</name>
+    <name>DefaultHost</name>
   </host>
+  <storage>
+    <type>nfs</type>    
+  </storage>
+  <storage_format>v3</storage_format>
   <format>false</format>
 </storage_domain>

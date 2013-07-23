@@ -1,5 +1,6 @@
 <storage_domain>
   <storage>
-    <path>/net/smamit.eng.lab.tlv.redhat.com/volumes/smamit/frontend/mpastern/3.3/nfs/1</path>
+    <address>smamit.eng.lab.tlv.redhat.com</address>
+    <path>/volumes/smamit/frontend/mpastern/3.3/nfs/1</path>
   </storage>
 </storage_domain>

@@ -78,9 +78,10 @@ class StorageDomainResourceManager(AbstractResourceManager):
                                                  **kwargs)
                                 )
             if storagedomain:
+                # TODO: wait for status
                 # attach storage domain
                 datacenter = self.dataCenterResourceManager.get(storagedomain)
-                return datacenter.storagedomains.add(**kwargs)
+                return datacenter.storagedomains.add(storagedomain)
             else:
                 self.raiseNotCreatedError()
         return storagedomain
