@@ -17,9 +17,8 @@ class resources(object):
                 rm_class = ResourceManager.getResourceManager(rm)
                 if rm_class:
                     rm_instance = rm_class()
-#                     if not rm_instance.get():
-#                         rm_instance.add()
-                    rm_instance.add(**kwargs)
+                    if not rm_instance.get(get_only=True):
+                        rm_instance.add(**kwargs)
                         # TODO: use **kwargs for private init
                 else:
                     raise ResourceManagerNotFoundError(rm)
