@@ -1,4 +1,5 @@
 <host>
   <description>The default host (grey-vdsa.eng.lab.tlv.redhat.com)</description>
   <address>10.35.16.211</address>
+  <root_password>qum5net</root_password>
 </host>
