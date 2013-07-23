@@ -5,6 +5,7 @@ Created on Jul 23, 2013
 '''
 
 from xml.etree import ElementTree as et
+from src.utils.fileutils import FileUtils
 
 class XmlUtils(object):
     '''
@@ -16,11 +17,13 @@ class XmlUtils(object):
         """
         Combines XML files
         """
-        elements = [et.parse(f).getroot() for f in files]
-        if elements and len(elements) >= 2:
+        if files and len(files) >= 2:
+            elements = [et.parse(f).getroot() for f in files]
             for r in elements[1:]:
                 XmlUtils.__combineElement(elements[0], r)
             return et.tostring(elements[0])
+        elif len(files) == 1:
+            return FileUtils.getContent(files[0])
 
     @staticmethod
     def __combineElement(one, other):
