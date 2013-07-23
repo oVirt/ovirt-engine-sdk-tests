@@ -90,4 +90,9 @@ class HostResourceManager(AbstractResourceManager):
         host = self.get()
         if not host:
             self.raiseNotFoundError()
+
+        if host.status.state != 'maintenance':
+            host.deactivate()
+            # TODO: wait for status
+
         return host.delete()
