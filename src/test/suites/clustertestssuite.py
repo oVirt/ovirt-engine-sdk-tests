@@ -33,7 +33,7 @@ class ClusterTestsSuite(AbstractOvirtTestsSuite):
 # ############### test/s ###############
 
 
-    @conflicts.resources([params.Cluster])
+    @conflicts.resources([params.Host, params.Cluster])
     @invoke.prerun([])
     @invoke.postrun([])
     def testCreate(self):
