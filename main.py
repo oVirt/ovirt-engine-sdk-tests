@@ -15,9 +15,21 @@
 # limitations under the License.
 #
 
+import pkgutil
+import pyclbr
 import unittest
-from src.test.clustertestssuite import ClusterTestsSuite
+
+import src.test.suites as testsuites
+from src.infrastructure.reflectionhelper import ReflectionHelper
 
 if __name__ == "__main__":
-    suite = unittest.TestLoader().loadTestsFromTestCase(ClusterTestsSuite)
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    for importer, modname, ispkg in \
+        pkgutil.walk_packages(path=testsuites.__path__,
+                              prefix=testsuites.__name__ + '.',
+                              onerror=lambda x: None):
+        if not ispkg and not modname.endswith(".abstractovirttestssuite"):
+            for clazz_name in pyclbr.readmodule(modname).keys():
+                clazz = ReflectionHelper.getClass(modname + "." + clazz_name)
+                print "\nRunning tests from: {0}".format(clazz.__name__)
+                suite = unittest.TestLoader().loadTestsFromTestCase(clazz)
+                unittest.TextTestRunner(verbosity=2).run(suite)

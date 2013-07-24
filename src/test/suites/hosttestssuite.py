@@ -1,8 +1,8 @@
 
-from src.test.abstractovirttestssuite import AbstractOvirtTestsSuite
 from ovirtsdk.xml import params
 from src.infrastructure.annotations import conflicts
 from src.resource.hostresourcemanager import HostResourceManager
+from src.test.suites.abstractovirttestssuite import AbstractOvirtTestsSuite
 
 
 class HostTestsSuite(AbstractOvirtTestsSuite):
