@@ -33,7 +33,7 @@ class StorageDomainTestsSuite(AbstractOvirtTestsSuite):
 # ############### test/s ###############
 
 
-    @conflicts.resources([params.Host])
+    @conflicts.resources([params.StorageDomain])
     def testCreate(self):
 
         # verify add() response
