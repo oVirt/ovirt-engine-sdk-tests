@@ -8,6 +8,7 @@ from ovirtsdk.xml import params
 from src.resource.abstractresourcemanager import AbstractResourceManager
 from src.resource.resourcefactory import ResourceFactory
 from src.infrastructure.annotations import requires
+from src.utils.statusutils import StatusUtils
 
 class ClusterResourceManager(AbstractResourceManager):
     '''
@@ -85,4 +86,12 @@ class ClusterResourceManager(AbstractResourceManager):
         cluster = self.get()
         if not cluster:
             self.raiseNotFoundError()
-        return cluster.delete()
+
+        # delete
+        response = cluster.delete()
+
+        # wait till gone
+        StatusUtils.waitRemoved(self.get)
+
+        return response
+

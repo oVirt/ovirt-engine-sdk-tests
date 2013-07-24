@@ -7,6 +7,7 @@ Created on May 1, 2013
 from ovirtsdk.xml import params
 from src.resource.abstractresourcemanager import AbstractResourceManager
 from src.resource.resourcefactory import ResourceFactory
+from src.utils.statusutils import StatusUtils
 
 class DataCenterResourceManager(AbstractResourceManager):
     '''
@@ -83,4 +84,11 @@ class DataCenterResourceManager(AbstractResourceManager):
         resource = self.get()
         if not resource:
             self.raiseNotFoundError()
-        return resource.delete()
+
+        # delete
+        response = resource.delete()
+
+        # wait till gone
+        StatusUtils.waitRemoved(self.get)
+
+        return response

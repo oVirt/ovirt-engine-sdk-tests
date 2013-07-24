@@ -6,6 +6,7 @@ Created on May 26, 2013
 
 from src.errors.testerror import TestError
 
+
 class ConfigNotFoundError(TestError):
 
     def __init__(self, cFile):

@@ -8,6 +8,7 @@ from ovirtsdk.xml import params
 from src.resource.abstractresourcemanager import AbstractResourceManager
 from src.resource.resourcefactory import ResourceFactory
 from src.infrastructure.annotations import requires
+from src.utils.statusutils import StatusUtils
 
 class HostResourceManager(AbstractResourceManager):
     '''
@@ -75,6 +76,10 @@ class HostResourceManager(AbstractResourceManager):
                       )
             if not host:
                 self.raiseNotCreatedError()
+
+            # wait till ready
+            StatusUtils.wait(self.get, 'up')
+
             return host
         return host
 
@@ -93,6 +98,12 @@ class HostResourceManager(AbstractResourceManager):
 
         if host.status.state != 'maintenance':
             host.deactivate()
-            # TODO: wait for status
+            StatusUtils.wait(self.get, 'maintenance')
 
-        return host.delete()
+        # delete
+        response = host.delete()
+
+        # wait till gone
+        StatusUtils.waitRemoved(self.get)
+
+        return response

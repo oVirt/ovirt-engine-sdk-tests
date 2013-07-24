@@ -9,6 +9,7 @@ from src.resource.abstractresourcemanager import AbstractResourceManager
 from src.resource.resourcefactory import ResourceFactory
 from src.infrastructure.annotations import requires
 from src.resource.datacenterresourcemanager import DataCenterResourceManager
+from src.utils.statusutils import StatusUtils
 
 class StorageDomainResourceManager(AbstractResourceManager):
     '''
@@ -78,10 +79,14 @@ class StorageDomainResourceManager(AbstractResourceManager):
                                                  **kwargs)
                                 )
             if storagedomain:
-                # TODO: wait for status
+                # wait till ready
+                StatusUtils.wait(self.get, 'unattached')
                 # attach storage domain
                 datacenter = self.dataCenterResourceManager.get(storagedomain)
-                return datacenter.storagedomains.add(storagedomain)
+                attached_storagedomain = datacenter.storagedomains.add(storagedomain)
+                # wait till ready
+                StatusUtils.wait(self.get, 'active')
+                return attached_storagedomain
             else:
                 self.raiseNotCreatedError()
         return storagedomain
@@ -98,4 +103,17 @@ class StorageDomainResourceManager(AbstractResourceManager):
         storagedomain = self.get()
         if not storagedomain:
             self.raiseNotFoundError()
-        return storagedomain.delete()
+
+        # move to maintenance
+        storagedomain.deactivate()
+
+        # wait till ready
+        StatusUtils.wait(self.get, 'maintenance')
+
+        # delete
+        response = storagedomain.delete()
+
+        # wait till gone
+        StatusUtils.waitRemoved(self.get)
+
+        return response
