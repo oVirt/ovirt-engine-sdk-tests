@@ -1,3 +1,18 @@
+#
+# Copyright (c) 2013 Red Hat, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#           http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 
 from src.resource.clusterresourcemanager import ClusterResourceManager
 from ovirtsdk.xml import params
@@ -6,6 +21,10 @@ from src.test.suites.abstractovirttestssuite import AbstractOvirtTestsSuite
 
 
 class ClusterTestsSuite(AbstractOvirtTestsSuite):
+
+    """
+    Cluster TestsSuite
+    """
 
     __clusterResourceManager = ClusterResourceManager()
 
@@ -37,7 +56,9 @@ class ClusterTestsSuite(AbstractOvirtTestsSuite):
     @invoke.prerun([])
     @invoke.postrun([])
     def testCreate(self):
-
+        """"
+        Validates the cluster creation
+        """
         # verify add() response
         new_cluster = self.getClusterResourceManager().add()
         self.assertNotEqual(new_cluster, None, 'Cluster create has failed!')
@@ -47,6 +68,9 @@ class ClusterTestsSuite(AbstractOvirtTestsSuite):
         self.assertNotEqual(cluster, None, 'Fetch of cluster post create has failed!')
 
     def testCreateWithUserConfig(self):
+        """"
+        Validates the cluster with custom config creation
+        """
 
         # verify add() response
         new_cluster = self.getClusterResourceManager().add(name="foo")
@@ -58,6 +82,9 @@ class ClusterTestsSuite(AbstractOvirtTestsSuite):
 
     @requires.resources([params.Cluster])
     def testUpdate(self):
+        """"
+        Validates the cluster update
+        """
 
         cluster = self.getClusterResourceManager().get(get_only=True)
 
@@ -72,6 +99,10 @@ class ClusterTestsSuite(AbstractOvirtTestsSuite):
          )
 
     def testDelete(self):
+        """"
+        Validates the cluster delete
+        """
+
         cluster = self.getClusterResourceManager().get()
 
         cluster.delete()

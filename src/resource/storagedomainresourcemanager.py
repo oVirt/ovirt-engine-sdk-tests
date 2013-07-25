@@ -1,8 +1,18 @@
-'''
-Created on May 1, 2013
+#
+# Copyright (c) 2013 Red Hat, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#           http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-@author: mpastern
-'''
 
 from ovirtsdk.xml import params
 from src.resource.abstractresourcemanager import AbstractResourceManager
@@ -26,11 +36,14 @@ class StorageDomainResourceManager(AbstractResourceManager):
     # abstract impl
     def get(self, get_only=False, **kwargs):
         """
-        Fetches given StorageDomain
-        
+        Fetches default StorageDomain (creates it if not exist)
+
         @param get_only: do not create on absence
-        @param kwargs: list args 
+        @param kwargs: keyword args
+
+        @return: StorageDomain
         """
+
         if not kwargs:
             kwargs = {'name': self.getName()}
 
@@ -51,10 +64,14 @@ class StorageDomainResourceManager(AbstractResourceManager):
     # abstract impl
     def list(self, **kwargs):
         """
-        Lists available storagedomains
-        
-        @param kwargs: list args 
+        Lists all available StorageDomains according
+        to keyword agrs
+
+        @param kwargs: keyword args
+
+        @return: StorageDomains
         """
+
         return self.getResourceManager() \
                    .getSdk() \
                    .storagedomains \
@@ -64,9 +81,12 @@ class StorageDomainResourceManager(AbstractResourceManager):
     @requires.resources([params.Host])
     def add(self, **kwargs):
         """
-        Adds new storagedomain
-        
-        @param kwargs: keyword args 
+        Adds default StorageDomain according to default configuration
+        and/or new/overrides defaults according to keyword args  
+
+        @param kwargs: keyword args
+
+        @return: StorageDomain
         """
 
         storagedomain = self.get(get_only=True)
@@ -107,12 +127,28 @@ class StorageDomainResourceManager(AbstractResourceManager):
 
     # abstract impl
     def update(self, **kwargs):
+        """
+        Updates default StorageDomain according to keyword args  
+
+        @param kwargs: keyword args
+
+        @return: StorageDomain
+        """
+
         storagedomain = self.get()
         if not storagedomain:
             self.raiseNotFoundError()
         return storagedomain.update(**kwargs)
 
     def getAttachedStorageDomain(self, get_only=True):
+        """
+        Fetches attached StorageDomain by default DC
+
+        @param get_only: do not create on demand
+
+        @return: StorageDomain
+        """
+
         storagedomain = self.get(get_only=get_only)
         if not storagedomain:
             self.raiseNotFoundError()
@@ -122,13 +158,37 @@ class StorageDomainResourceManager(AbstractResourceManager):
         return  datacenter.storagedomains.get(id=storagedomain.id)
 
     def getDataCenter(self, get_only=True):
+        """
+        Fetches default DataCenter
+
+        @param get_only: do not create on demand
+
+        @return: DataCenter
+        """
+
         return self.dataCenterResourceManager.get(get_only=get_only)
 
     def getHost(self, get_only=True):
+        """
+        Fetches default Host
+
+        @param get_only: do not create on demand
+
+        @return: Host
+        """
+
         return self.dataCenterResourceManager.get(get_only=get_only)
 
     # abstract impl
     def remove(self, **kwargs):
+        """
+        Removes default StorageDomain according to keyword args  
+
+        @param kwargs: keyword args
+
+        @return: Response
+        """
+
         storagedomain = self.get(get_only=True)
         if not storagedomain:
             return

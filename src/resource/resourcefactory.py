@@ -1,8 +1,18 @@
-'''
-Created on May 1, 2013
+#
+# Copyright (c) 2013 Red Hat, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#           http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-@author: mpastern
-'''
 
 from ovirtsdk.xml import params
 from src.errors.notfounderror import NotFoundError
@@ -14,7 +24,7 @@ from src.errors.incorrrecttypeerror import IncorrrectTypeError
 # @singleton
 class ResourceFactory(Singleton):
     '''
-    ParamsHolder factory provides parameters holders
+    Resource factory provides resources
     construction capabilities
     '''
 
@@ -22,18 +32,29 @@ class ResourceFactory(Singleton):
 
     @staticmethod
     def getConfigManager():
+        """
+        @return: ConfigManager
+        """
         return ResourceFactory.__cm
 
     @staticmethod
     def create(typ, **kwargs):
+        """
+        Creates params holder from default config
+        and overrides/set properties according to kwargs
+        
+        @param kwargs: keyword args
+        
+        @return: params holder
+        """
         clazz = getattr(params, typ.__name__)
         if not clazz:
             raise NotFoundError(typ, 'type')
-        
+
         xm_body = ResourceFactory.getConfigManager()\
                                  .get(typ.__name__.lower())\
                                  .get('resource')
-                                 
+
         params_holder = params.parseString(xm_body)
 
         if type(params_holder) != typ:
@@ -42,6 +63,7 @@ class ResourceFactory(Singleton):
                       type(params_holder).__name__
             )
 
+        # TODO: revisit
         if kwargs:
             for name, value in kwargs.items():
                 if name not in ConfigManager.INTERNAL_PROPERIES:

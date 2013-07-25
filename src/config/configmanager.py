@@ -1,4 +1,3 @@
-#!/usr/bin/python
 #
 # Copyright (c) 2013 Red Hat, Inc.
 #
@@ -13,26 +12,28 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
+
+
+import os
+import types
+import threading
 
 from ovirtsdk.utils.ordereddict import OrderedDict
 from src.infrastructure.singleton import Singleton
 from ConfigParser import ConfigParser
-import os
-import threading
 from src.errors.confignotfounderror import ConfigNotFoundError
 from src.utils.typeutils import TypeUtils
 from src.utils.dictutils import DictUtils
-import types
 from src.utils.fileutils import FileUtils
 from src.errors.notfoundresourceconfigerror import NotFoundResourceConfigError
-from xml.etree import ElementTree
-import glob
 from src.utils.xmlutils import XmlUtils
 # from src.infrastructure.singleton import singleton
 
 # @singleton
 class ConfigManager(Singleton):
+    """
+    ConfigManager managing test suite config
+    """
 
     __dict = None
     __custom_dict = None
@@ -53,20 +54,39 @@ class ConfigManager(Singleton):
 
     @staticmethod
     def __loadConfigFile(fname, error_on_not_found=True):
-            """
-            Load default values from a configuration file.
-            """
+        """
+        Load default values from the configuration file.
 
-            cp = ConfigParser()
-            if cp.read(fname):
-                ConfigManager.__normalalaizeParams(cp._sections)
-                ConfigManager.__injectResources(cp._sections)
-                return cp._sections
-            if error_on_not_found:
-                raise ConfigNotFoundError(fname)
+        @param fname: file name
+        @param error_on_not_found: raise error if not found
+
+        @raise ConfigNotFoundError: when file not found and 
+                                    error_on_not_found=True (default)
+
+        @return: ConfigParser sections
+        """
+
+        cp = ConfigParser()
+        if cp.read(fname):
+            ConfigManager.__normalalaizeParams(cp._sections)
+            ConfigManager.__injectResources(cp._sections)
+            return cp._sections
+        if error_on_not_found:
+            raise ConfigNotFoundError(fname)
 
     @staticmethod
     def get(key, failobj=None, exclude=None):
+        """
+        Fetches the value of ConfigManager according to key
+        
+        @param key: the key of value to fetch
+        @param failobj: object to be returned in case of failure
+                        (key not in ConfigManager)
+        @param exclude: items to exclude
+        
+        @return: ConfigManager[key] or failobj
+        """
+
         if exclude:
             res = ConfigManager.__getDict().get(key, failobj)
             if isinstance(res, types.DictType):
@@ -79,10 +99,25 @@ class ConfigManager(Singleton):
 
     @staticmethod
     def hasKey(key):
+        """
+        Checks if given key is exist in the ConfigManager
+        
+        @param key: key to check
+        
+        @return: true/false
+        """
+
         return ConfigManager.__getDict().__dict.has_key(key)
 
     @staticmethod
     def __getDict():
+        """
+        Combines the dect of configuration from both default
+        and custom config files
+        
+        @return: dict
+        """
+
         config_fname = ConfigManager.CONFIG_DIR + '/' + ConfigManager.CONFIG_FILE
         custom_config_fname = ConfigManager.CUSTOM_CONFIG_DIR + '/' + ConfigManager.CUSTOM_CONFIG_FILE
 
@@ -109,6 +144,10 @@ class ConfigManager(Singleton):
 
     @staticmethod
     def __normalalaizeParams(sections):
+        """
+        Formats string/NoneType to the python types 
+        """
+
         for section in sections:
             for key in sections[section]:
                 if not key.startswith("__"):
@@ -119,6 +158,11 @@ class ConfigManager(Singleton):
 
     @staticmethod
     def __injectResources(sections):
+        """
+        Updates ConfigManager with actual resources
+        configuration
+        """
+
         for section in sections:
             if section not in ConfigManager.INTERNAL_SECTIONS:
                 resource = ConfigManager.__loadResource(section)
@@ -126,6 +170,14 @@ class ConfigManager(Singleton):
 
     @staticmethod
     def __loadResource(resource):
+        """
+        Loads resources configuration from the default
+        and custom config files
+        
+        @param resource: resource to fetch the config for
+        
+        @return: resources XML representation 
+        """
 
         default_resourece = ConfigManager.RESOURCES_CONFIG_DIR + os.sep + resource + ".xml"
         custom_resourece = ConfigManager.CUSTOM_RESOURCES_CONFIG_DIR + os.sep + resource + ".xml"

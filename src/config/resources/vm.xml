@@ -1,39 +1,9 @@
 <vm>
   <name>test</name>
-  <type>desktop</type>
-  <memory>536870912</memory>
-  <cpu>
-    <topology sockets="1" cores="1" />
-  </cpu>
-  <os type="unassigned">
-    <boot dev="hd" />
-  </os>
-  <high_availability>
-    <enabled>false</enabled>
-    <priority>0</priority>
-  </high_availability>
-  <display>
-    <type>spice</type>
-    <monitors>1</monitors>
-    <allow_override>false</allow_override>
-    <smartcard_enabled>false</smartcard_enabled>
-  </display>
   <cluster>
-    <name>testCluster<name/>
-  <cluster/>
+    <name>testCluster</name>
+  </cluster>
   <template>
-    <name>Default<name/>
-  <template/>
-  <origin>ovirt</origin>
-  <stateless>false</stateless>
-  <delete_protected>false</delete_protected>
-  <placement_policy>
-    <affinity>migratable</affinity>
-  </placement_policy>
-  <memory_policy>
-    <guaranteed>536870912</guaranteed>
-  </memory_policy>
-  <usb>
-    <enabled>false</enabled>
-  </usb>
+    <name>Default</name>
+  </template>
 </vm>
