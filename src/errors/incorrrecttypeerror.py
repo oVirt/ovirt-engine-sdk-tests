@@ -27,6 +27,6 @@ class IncorrrectTypeError(TestError):
         '''
         Exception.__init__(
                self,
-               'Destination "%s" type does not match to produced one "%s".' \
+               'Required type "%s" while accepted "%s".' \
                % (dstType, producedType)
         )

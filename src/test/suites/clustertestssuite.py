@@ -16,7 +16,7 @@
 
 from src.resource.clusterresourcemanager import ClusterResourceManager
 from ovirtsdk.xml import params
-from src.infrastructure.annotations import requires, conflicts, invoke
+from src.infrastructure.annotations import requires, conflicts, invoke, run
 from src.test.suites.abstractovirttestssuite import AbstractOvirtTestsSuite
 
 
@@ -51,7 +51,7 @@ class ClusterTestsSuite(AbstractOvirtTestsSuite):
 
 # ############### test/s ###############
 
-
+    @run.ifGrateOrEqual(params.Version(major=3, minor=4, build_=0, revision=0))
     @conflicts.resources([params.Host, params.Cluster])
     @invoke.prerun([])
     @invoke.postrun([])
