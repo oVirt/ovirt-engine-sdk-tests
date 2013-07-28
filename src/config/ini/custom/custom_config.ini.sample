@@ -3,5 +3,13 @@
 [tests]
 debuglevel = 1
 
+#[sdk]
+# => your api URI (format is http[s]://HOST[:PORT]/api)
+#url = 
+# => your username and domain (format USER@DOMAIN)
+#username = 
+# => your password
+#password = 
+
 ### end override default config   ###
 
