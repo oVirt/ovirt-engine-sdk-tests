@@ -16,11 +16,11 @@
 
 from ovirtsdk.xml import params
 from src.resource.abstractresourcemanager import AbstractResourceManager
-from src.resource.resourcefactory import ResourceFactory
 from src.infrastructure.annotations import requires
 from src.resource.datacenterresourcemanager import DataCenterResourceManager
 from src.utils.statusutils import StatusUtils
 from src.resource.hostresourcemanager import HostResourceManager
+import types
 
 class StorageDomainResourceManager(AbstractResourceManager):
     '''
@@ -44,22 +44,11 @@ class StorageDomainResourceManager(AbstractResourceManager):
         @return: StorageDomain
         """
 
-        if not kwargs:
-            kwargs = {'name': self.getName()}
-
-        resource = self.__doGet(**kwargs)
-        if not resource and not get_only:
-            if self.isCreateOnDemand():
-                return self.add()
-            else:
-                self.raiseNotFoundError()
-        return resource
-
-    def __doGet(self, **kwargs):
-        return self.getResourceManager() \
-                   .getSdk() \
-                   .storagedomains \
-                   .get(**kwargs)
+        return self._doGet(
+                       self.getResourceManager().getSdk().storagedomains,
+                       get_only=get_only,
+                       **kwargs
+        )
 
     # abstract impl
     def list(self, **kwargs):
@@ -81,8 +70,9 @@ class StorageDomainResourceManager(AbstractResourceManager):
     @requires.resources([params.Host])
     def add(self, **kwargs):
         """
-        Adds default StorageDomain according to default configuration
-        and/or new/overrides defaults according to keyword args  
+        Adds default StorageDomain/s according to the default configuration/s
+        (default configuration can be overridden with custom config
+        via keyword args)  
 
         @param kwargs: keyword args
 
@@ -91,39 +81,60 @@ class StorageDomainResourceManager(AbstractResourceManager):
 
         storagedomain = self.get(get_only=True)
         if not storagedomain:
+            # wait for host to become ready
+            StatusUtils.wait(self.getHost, 'up')
+
             # create storage domain
             self.injectExpectParam(kwargs)
-            storagedomain = self.getResourceManager() \
-                                .getSdk() \
-                                .storagedomains \
-                                .add(ResourceFactory.create(
-                                          self.getType(),
-                                          **kwargs
-                                    )
-                            )
-            if storagedomain:
-                # wait till ready
-                StatusUtils.wait(self.get, 'unattached')
-                # attach storage domain
-                datacenter = self.getDataCenter()
-                attached_storagedomain = datacenter.storagedomains.add(storagedomain)
-                # wait till it got active
-                try:
-                    StatusUtils.wait(self.getAttachedStorageDomain, 'active')
-                except:
-                    pass
 
-                # if it's not went up, try activate manually
-                if attached_storagedomain.status.state != 'active':
-                    # activate SD
-                    attached_storagedomain.activate()
-                    # wait till ready
-                    StatusUtils.wait(self.getAttachedStorageDomain, 'active')
-
-                return attached_storagedomain
+            created_storagedomains = self._doAdd(
+                  self.getResourceManager().getSdk().storagedomains,
+                  **kwargs
+            )
+            if created_storagedomains:
+                if isinstance(created_storagedomains, types.ListType):
+                    attach_responses = []
+                    for item in created_storagedomains:
+                        attach_responses.append(self._attach(item))
+                    return attach_responses[0]
+                else:
+                    return self._attach(created_storagedomains)
             else:
                 self.raiseNotCreatedError()
         return storagedomain
+
+    def _attach(self, storagedomain):
+        """
+        Attaches StorageDomain to DC
+        
+        @param storagedomain: The StorageDomain to attach
+        """
+        if storagedomain:
+            # wait till ready
+            StatusUtils.waitBrutal(self.get, 'unattached', name=storagedomain.name)
+            # attach storage domain
+            datacenter = self.getDataCenter()
+            attached_storagedomain = datacenter.storagedomains.add(storagedomain)
+
+            # wait till it got active
+            try:
+                StatusUtils.wait(
+                     self.getAttachedStorageDomain,
+                     'active'
+                )
+            except:
+                pass
+
+            # if it's not went up, try activate manually
+            if attached_storagedomain.status.state != 'active':
+                # activate SD
+                attached_storagedomain.activate()
+                # wait till ready
+                StatusUtils.wait(
+                     self.getAttachedStorageDomain,
+                     'active'
+                )
+            return attached_storagedomain
 
     # abstract impl
     def update(self, **kwargs):
@@ -177,7 +188,7 @@ class StorageDomainResourceManager(AbstractResourceManager):
         @return: Host
         """
 
-        return self.dataCenterResourceManager.get(get_only=get_only)
+        return self.hostResourceManager.get(get_only=get_only)
 
     # abstract impl
     def remove(self, **kwargs):
@@ -196,7 +207,9 @@ class StorageDomainResourceManager(AbstractResourceManager):
         # get attached storage domain
         attached_storagedomain = self.getAttachedStorageDomain()
 
-        if attached_storagedomain.status.state != 'maintenance':
+        if attached_storagedomain and attached_storagedomain.status and \
+           attached_storagedomain.status.state and \
+           attached_storagedomain.status.state != 'maintenance':
 
             # move to maintenance
             attached_storagedomain.deactivate()

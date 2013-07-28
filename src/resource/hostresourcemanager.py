@@ -16,7 +16,6 @@
 
 from ovirtsdk.xml import params
 from src.resource.abstractresourcemanager import AbstractResourceManager
-from src.resource.resourcefactory import ResourceFactory
 from src.infrastructure.annotations import requires
 from src.utils.statusutils import StatusUtils
 
@@ -29,6 +28,7 @@ class HostResourceManager(AbstractResourceManager):
     def __init__(self):
         super(HostResourceManager, self).__init__(params.Host)
 
+
     # abstract impl
     def get(self, get_only=False, **kwargs):
         """
@@ -40,25 +40,11 @@ class HostResourceManager(AbstractResourceManager):
         @return: Host
         """
 
-        if not kwargs:
-            kwargs = {'name': self.getName()}
-
-        resource = self.__doGet(**kwargs)
-        if not resource and not get_only:
-            if self.isCreateOnDemand():
-                return self.add()
-            else:
-                self.raiseNotFoundError()
-        return resource
-
-    def __doGet(self, **kwargs):
-        """
-        Performs actual get()
-        """
-        return self.getResourceManager() \
-                   .getSdk() \
-                   .hosts \
-                   .get(**kwargs)
+        return self._doGet(
+                       self.getResourceManager().getSdk().hosts,
+                       get_only=get_only,
+                       **kwargs
+        )
 
     # abstract impl
     def list(self, **kwargs):
@@ -80,32 +66,19 @@ class HostResourceManager(AbstractResourceManager):
     @requires.resources([params.Cluster])
     def add(self, **kwargs):
         """
-        Adds default Host according to default configuration
-        and/or new/overrides defaults according to keyword args  
+        Adds default Host/s according to the default configuration/s
+        (default configuration can be overridden with custom config
+        via keyword args)  
 
         @param kwargs: keyword args
 
         @return: Host
         """
 
-        host = self.get(get_only=True)
-        if not host:
-            self.injectExpectParam(kwargs)
-            host = self.getResourceManager() \
-                       .getSdk() \
-                       .hosts.add(
-                             ResourceFactory.create(
-                                        self.getType(),
-                                        **kwargs)
-                      )
-            if not host:
-                self.raiseNotCreatedError()
-
-            # wait till ready
-            StatusUtils.wait(self.get, 'up')
-
-            return host
-        return host
+        return self._doAdd(
+              self.getResourceManager().getSdk().hosts,
+              **kwargs
+        )
 
     # abstract impl
     def update(self, **kwargs):

@@ -24,20 +24,46 @@ class StatusUtils(object):
     '''
 
     @staticmethod
-    def wait(method, status, ttl=240, sleep=2):
+    def waitBrutal(method, status, ttl=240, sleep=2, **kwargs):
         """
-        Waits for status condition
-        
+        Waits for status field and for status field to answer the
+        status condition
+
         @param method: the method to invoke in order to fetch the entity
         @param status: the status to wait for
         @param ttl: time to wait in seconds (default 240 seconds)
         @param sleep: check interval in seconds (default 2 seconds)
-        
+        @param kwargs: keyword args
+
         @raise NotFoundError: when destination object not found
         @raise TimeoutError: after ttl expires
         """
         while ttl > 0:
-            wait_object = method(get_only=True)
+            wait_object = method(get_only=True, **kwargs)
+            if not wait_object:
+                raise NotFoundError('type', 'defined for wait()')
+            if wait_object.status and wait_object.status.state:
+                return StatusUtils.wait(method, status, ttl, sleep, **kwargs)
+            time.sleep(sleep)
+            ttl -= sleep
+        raise TimeoutError(ttl)
+
+    @staticmethod
+    def wait(method, status, ttl=240, sleep=2, **kwargs):
+        """
+        Waits for status condition
+
+        @param method: the method to invoke in order to fetch the entity
+        @param status: the status to wait for
+        @param ttl: time to wait in seconds (default 240 seconds)
+        @param sleep: check interval in seconds (default 2 seconds)
+        @param kwargs: keyword args
+
+        @raise NotFoundError: when destination object not found
+        @raise TimeoutError: after ttl expires
+        """
+        while ttl > 0:
+            wait_object = method(get_only=True, **kwargs)
             if not wait_object:
                 raise NotFoundError('type', 'defined for wait()')
             if wait_object.status.state and wait_object.status.state == status:

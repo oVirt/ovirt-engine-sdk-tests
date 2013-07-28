@@ -16,7 +16,6 @@
 
 from ovirtsdk.xml import params
 from src.resource.abstractresourcemanager import AbstractResourceManager
-from src.resource.resourcefactory import ResourceFactory
 from src.utils.statusutils import StatusUtils
 
 class DataCenterResourceManager(AbstractResourceManager):
@@ -38,24 +37,12 @@ class DataCenterResourceManager(AbstractResourceManager):
 
         @return: DataCenter
         """
-        if not kwargs:
-            kwargs = {'name': self.getName()}
 
-        resource = self.__doGet(**kwargs)
-        if not resource and not get_only:
-            if self.isCreateOnDemand():
-                return self.add()
-            else:
-                self.raiseNotFoundError()
-        return resource
-
-    def __doGet(self, **kwargs):
-        """
-        Performs actual get()
-        """
-        return self.getResourceManager() \
-                   .getSdk() \
-                   .datacenters.get(**kwargs)
+        return self._doGet(
+                       self.getResourceManager().getSdk().datacenters,
+                       get_only=get_only,
+                       **kwargs
+        )
 
     # abstract impl
     def list(self, **kwargs):
@@ -69,29 +56,25 @@ class DataCenterResourceManager(AbstractResourceManager):
         """
         return self.getResourceManager() \
                    .getSdk() \
-                   .datacenters.list(**kwargs)
+                   .datacenters \
+                   .list(**kwargs)
 
     # abstract impl
     def add(self, **kwargs):
         """
-        Adds default DataCenter according to default configuration
-        and/or new/overrides defaults according to keyword args  
+        Adds default DataCenter/s according to the default configuration/s
+        (default configuration can be overridden with custom config
+        via keyword args)  
 
         @param kwargs: keyword args
 
         @return: DataCenter
         """
 
-        dc = self.get(get_only=True)
-        if not dc:
-            return self.getResourceManager() \
-                       .getSdk() \
-                       .datacenters.add(
-                              ResourceFactory.create(
-                                         self.getType(),
-                                         **kwargs)
+        return self._doAdd(
+              self.getResourceManager().getSdk().datacenters,
+              **kwargs
         )
-        return dc
 
     # abstract impl
     def update(self, **kwargs):

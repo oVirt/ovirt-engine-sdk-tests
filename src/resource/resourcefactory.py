@@ -17,9 +17,11 @@
 from ovirtsdk.xml import params
 from src.errors.notfounderror import NotFoundError
 from src.config.configmanager import ConfigManager
-# from src.infrastructure.singleton import singleton
 from src.infrastructure.singleton import Singleton
 from src.errors.incorrrecttypeerror import IncorrrectTypeError
+import types
+# from src.infrastructure.singleton import singleton
+
 
 # @singleton
 class ResourceFactory(Singleton):
@@ -42,30 +44,57 @@ class ResourceFactory(Singleton):
         """
         Creates params holder from default config
         and overrides/set properties according to kwargs
-        
+
         @param kwargs: keyword args
-        
+
         @return: params holder
         """
+
+        params_holders = []
+
         clazz = getattr(params, typ.__name__)
         if not clazz:
             raise NotFoundError(typ, 'type')
 
-        xm_body = ResourceFactory.getConfigManager()\
+        data = ResourceFactory.getConfigManager()\
                                  .get(typ.__name__.lower())\
                                  .get('resource')
 
-        params_holder = params.parseString(xm_body)
+        if isinstance(data, types.ListType):
+            i = 1
+            for item in data:
+                params_holder = ResourceFactory.__produceParamsHolder(typ, item)
+                # TODO: implement creation strategy
+                if len(data) > 1:
+                    params_holder.set_name(params_holder.get_name() + str(i))
+                    i += 1
+                params_holders.append(params_holder)
+            return params_holders
+        else:
+            return ResourceFactory.__produceParamsHolder(typ, data)
+
+    @staticmethod
+    def __produceParamsHolder(typ, item, **kwargs):
+        """
+        Produces ParamsHolder and injects custom data
+
+        @param item: item to process
+        @param kwargs: keyword args
+
+        @return: params holder
+        """
+        params_holder = params.parseString(item)
 
         if type(params_holder) != typ:
             raise IncorrrectTypeError(
                       typ.__name__,
                       type(params_holder).__name__
-            )
+        )
 
         # TODO: revisit
         if kwargs:
             for name, value in kwargs.items():
                 if name not in ConfigManager.INTERNAL_PROPERIES:
                     setattr(params_holder, name, value)
+
         return params_holder

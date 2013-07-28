@@ -1,0 +1,8 @@
+<storage_domains>
+  <storage_domain>
+    <storage>
+      <address>YOUR-STORAGE-HOST-ADDRESS</address>
+      <path>YOUR-STORAGE-PATH</path>
+    </storage>
+  </storage_domain>
+</storage_domains>

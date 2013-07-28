@@ -16,6 +16,7 @@
 
 from xml.etree import ElementTree as et
 from src.utils.fileutils import FileUtils
+from copy import deepcopy
 
 class XmlUtils(object):
     '''
@@ -30,11 +31,18 @@ class XmlUtils(object):
         @param files: list of xml files to combine
         @return: combined XML 
         """
+
+        combined = []
+
         if files and len(files) >= 2:
             elements = [et.parse(f).getroot() for f in files]
             for r in elements[1:]:
-                XmlUtils.__combineElement(elements[0], r)
-            return et.tostring(elements[0])
+                for child in r._children:
+                    root_copy = deepcopy(elements[0])
+                    XmlUtils.__combineElement(root_copy, child)
+                    xml_str = et.tostring(root_copy, encoding='utf8', method='xml')
+                    combined.append(xml_str)
+            return combined
         elif len(files) == 1:
             return FileUtils.getContent(files[0])
 

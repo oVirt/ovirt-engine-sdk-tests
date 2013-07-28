@@ -180,7 +180,7 @@ class ConfigManager(Singleton):
         """
 
         default_resourece = ConfigManager.RESOURCES_CONFIG_DIR + os.sep + resource + ".xml"
-        custom_resourece = ConfigManager.CUSTOM_RESOURCES_CONFIG_DIR + os.sep + resource + ".xml"
+        custom_resourece = ConfigManager.CUSTOM_RESOURCES_CONFIG_DIR + os.sep + resource + "s.xml"
 
         if os.path.exists(default_resourece) and os.path.isfile(default_resourece):
             if os.path.exists(custom_resourece) and os.path.isfile(custom_resourece):

@@ -22,6 +22,8 @@ from src.config.configmanager import ConfigManager
 from src.infrastructure.singleton import Singleton
 from src.errors.notfounderror import NotFoundError
 from src.errors.notcreatederror import NotCreatedError
+import types
+from src.resource.resourcefactory import ResourceFactory
 
 class AbstractResourceManager(Singleton):
     """
@@ -52,7 +54,10 @@ class AbstractResourceManager(Singleton):
         @return: Resource name as it defined at resource config
         """
 
-        return self.getResourceConfig().get_name()
+        configs = self.getResourceConfig()
+        if isinstance(configs, types.ListType):
+            return configs[0].get_name()
+        return configs.get_name()
 
     def getType(self):
         """
@@ -80,11 +85,79 @@ class AbstractResourceManager(Singleton):
         return self.__resource
 
     def __doGetResourceConfig(self):
-        return params.parseString(
-                 ConfigManager
-                     .get(self.__resourceType.__name__.lower())
-                     .get('resource'))
+        configs = ConfigManager \
+                     .get(self.__resourceType.__name__.lower()) \
+                     .get('resource')
 
+        if isinstance(configs, types.ListType):
+            config_items = []
+            i = 1
+            for item in configs:
+                item_param = params.parseString(item)
+                if len(configs) > 1:
+                    item_param.set_name(item_param.get_name() + str(i))
+                    # TODO: implement creation params strategy
+                config_items.append(item_param)
+                i += 1
+            return config_items
+        return params.parseString(configs)
+
+    def _doAdd(self, collection, **kwargs):
+        """
+        Adds default resource/s according to the default configuration/s
+        (default configuration can be overridden with custom config
+        via keyword args)  
+
+        @param collection: the collection to invoke .add() on
+        @param kwargs: keyword args
+
+        @return: DataCenter
+        """
+
+        resource = self.get(get_only=True)
+        if not resource:
+            params_holders = ResourceFactory.create(
+                                        self.getType(),
+                                        **kwargs
+            )
+
+            if isinstance(params_holders, types.ListType):
+                create_responses = []
+
+                for params_holder in params_holders:
+                    create_responses.append(
+                        collection.add(params_holder, **kwargs)
+                    )
+                return create_responses
+            else:
+                return collection.add(params_holders, **kwargs)
+        return resource
+
+    def _doGet(self, collection, get_only=False, **kwargs):
+        """
+        Fetches default resource
+        (creates it if not exist if configured to create_on_demand)
+
+        @param get_only: do not create on absence
+        @param kwargs: keyword args
+
+        @return: Cluster
+        """
+
+        if not kwargs or not kwargs.has_key("name"):
+            kwargs = {'name': self.getName()}
+
+        resource = collection.get(**kwargs)
+
+        if not resource and not get_only:
+            if self.isCreateOnDemand():
+                result = self.add()
+                if result and isinstance(result, types.ListType):
+                    return result[0]
+                return result
+            else:
+                self.raiseNotFoundError()
+        return resource
 
     def raiseNotFoundError(self):
         """
