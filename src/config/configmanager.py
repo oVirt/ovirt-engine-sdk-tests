@@ -43,11 +43,11 @@ class ConfigManager(Singleton):
     INTERNAL_SECTIONS = ['sdk', 'tests']
 
     # FIXME: fetch slash for platform
-    CONFIG_DIR = os.getcwd() + os.sep + "src" + os.sep + "config" + os.sep + "ini"
-    CUSTOM_CONFIG_DIR = CONFIG_DIR + os.sep + "custom"
+    CONFIG_DIR = os.getcwd() + os.sep + "src" + os.sep + "config" + os.sep + "system" + os.sep + "ini"
+    CUSTOM_CONFIG_DIR = os.getcwd() + os.sep + "src" + os.sep + "config" + os.sep + "custom" + os.sep + "ini"
 
-    RESOURCES_CONFIG_DIR = os.getcwd() + os.sep + "src" + os.sep + "config" + os.sep + "resources"
-    CUSTOM_RESOURCES_CONFIG_DIR = RESOURCES_CONFIG_DIR + os.sep + "custom"
+    RESOURCES_CONFIG_DIR = os.getcwd() + os.sep + "src" + os.sep + "config" + os.sep + "system" + os.sep + "resources"
+    CUSTOM_RESOURCES_CONFIG_DIR = os.getcwd() + os.sep + "src" + os.sep + "config" + os.sep + "custom" + os.sep + "resources"
 
     CONFIG_FILE = "config.ini"
     CUSTOM_CONFIG_FILE = "custom_config.ini"
