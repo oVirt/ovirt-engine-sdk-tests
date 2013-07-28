@@ -62,5 +62,5 @@ class HostTestsSuite(AbstractOvirtTestsSuite):
         self.assertNotEqual(new_host, None, 'Host create has failed!')
 
         # verify get of newly created cluster
-        host = self.getHostResourceManager().get(get_only=True)
+        host = self.getHostResourceManager().getOnly()
         self.assertNotEqual(host, None, 'Fetch of host post create has failed!')

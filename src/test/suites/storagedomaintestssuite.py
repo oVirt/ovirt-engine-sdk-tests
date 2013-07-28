@@ -64,5 +64,5 @@ class StorageDomainTestsSuite(AbstractOvirtTestsSuite):
         self.assertNotEqual(new_storagedomain, None, 'StorageDomain create has failed!')
 
         # verify get of newly created cluster
-        storagedomain = self.getStorageDomainResourceManager().get(get_only=True)
+        storagedomain = self.getStorageDomainResourceManager().getOnly()
         self.assertNotEqual(storagedomain, None, 'StorageDomain of host post create has failed!')

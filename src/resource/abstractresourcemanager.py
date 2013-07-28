@@ -114,7 +114,7 @@ class AbstractResourceManager(Singleton):
         @return: DataCenter
         """
 
-        resource = self.get(get_only=True)
+        resource = self.getOnly()
         if not resource:
             params_holders = ResourceFactory.create(
                                         self.getType(),
@@ -190,6 +190,17 @@ class AbstractResourceManager(Singleton):
         demand according to the resource config
         """
         return ConfigManager.get(self.getTypeName()).get('create_on_demand')
+
+    def getOnly(self, **kwargs):
+        """
+        Fetches default Resource
+
+        @param kwargs: keyword args
+
+        @return: default Resource
+        """
+
+        return self.get(get_only=True, **kwargs)
 
     @abstractmethod
     def get(self, get_only=False, **kwargs):

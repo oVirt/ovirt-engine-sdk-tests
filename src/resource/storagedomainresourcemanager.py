@@ -79,7 +79,7 @@ class StorageDomainResourceManager(AbstractResourceManager):
         @return: StorageDomain
         """
 
-        storagedomain = self.get(get_only=True)
+        storagedomain = self.getOnly()
         if not storagedomain:
             # wait for host to become ready
             StatusUtils.wait(self.getHost, 'up')
@@ -200,7 +200,7 @@ class StorageDomainResourceManager(AbstractResourceManager):
         @return: Response
         """
 
-        storagedomain = self.get(get_only=True)
+        storagedomain = self.getOnly()
         if not storagedomain:
             return
 

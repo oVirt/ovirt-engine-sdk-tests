@@ -86,7 +86,7 @@ class ClusterTestsSuite(AbstractOvirtTestsSuite):
         Validates the cluster update
         """
 
-        cluster = self.getClusterResourceManager().get(get_only=True)
+        cluster = self.getClusterResourceManager().getOnly()
 
         cluster.set_description("TEST")
         cluster.update()
@@ -107,5 +107,5 @@ class ClusterTestsSuite(AbstractOvirtTestsSuite):
 
         cluster.delete()
 
-        cluster = self.getClusterResourceManager().get(get_only=True)
+        cluster = self.getClusterResourceManager().getOnly()
         self.assertEqual(cluster, None, "cluster.delete() has failed")
