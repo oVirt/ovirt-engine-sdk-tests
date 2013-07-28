@@ -1,9 +1,9 @@
 <storage_domain>
-  <name>DefaultNfsSD</name>
-  <description>The default StorageDomain</description>
+  <name>DefaultTestNfsStorageDomain</name>
+  <description>The default test StorageDomain</description>
   <type>data</type>
   <host>
-    <name>DefaultHost</name>
+    <name>DefaultTestHost</name>
   </host>
   <storage>
     <type>nfs</type>    

@@ -1,6 +1,7 @@
 <host>
-  <name>DefaultHost</name>
+  <name>DefaultTestHost</name>
+  <description>The default test host</description>
   <cluster>
-    <name>TestCluster</name>
+    <name>DefaultTestCluster</name>
   </cluster>
 </host>

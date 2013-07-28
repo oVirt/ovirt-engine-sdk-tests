@@ -1,7 +1,8 @@
 <vm>
-  <name>test</name>
+  <name>DefaultTestVm</name>
+  <description>The default test VM</description>
   <cluster>
-    <name>testCluster</name>
+    <name>DefaultTestCluster</name>
   </cluster>
   <template>
     <name>Default</name>
