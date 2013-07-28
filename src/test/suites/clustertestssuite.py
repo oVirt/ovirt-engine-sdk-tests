@@ -51,7 +51,7 @@ class ClusterTestsSuite(AbstractOvirtTestsSuite):
 
 # ############### test/s ###############
 
-    @run.ifGrateOrEqual(params.Version(major=3, minor=4, build_=0, revision=0))
+    @run.ifGrateOrEqual(params.Version(major=3, minor=3, build_=0, revision=0))
     @conflicts.resources([params.Host, params.Cluster])
     @invoke.prerun([])
     @invoke.postrun([])
