@@ -28,32 +28,63 @@ class ClusterTestsSuite(AbstractOvirtTestsSuite):
 
     @run.ifGrateOrEqual(params.Version(major=3, minor=3, build_=0, revision=0))
     @conflicts.resources([params.Host, params.Cluster])
-    @invoke.prerun([])
-    @invoke.postrun([])
     def testCreate(self):
         """"
         Validates the cluster creation
         """
-        # verify add() response
-        new_cluster = ResourceManagersContainer.getClusterResourceManager().add()
-        self.assertNotEqual(new_cluster, None, 'Cluster create has failed!')
 
-        # verify get of newly created cluster
-        cluster = ResourceManagersContainer.getClusterResourceManager().getOnly()
-        self.assertNotEqual(cluster, None, 'Fetch of cluster post create has failed!')
+        # manual cluster create
+        new_cluster = ResourceManagersContainer\
+                                .getClusterResourceManager()\
+                                .add()
+
+        # verify response
+        self.assertNotEqual(
+                        new_cluster,
+                        None,
+                        'Cluster create has failed!'
+        )
+
+        # fetch newly created cluster
+        cluster = ResourceManagersContainer\
+                                .getClusterResourceManager()\
+                                .getOnly()
+
+        # verify existance
+        self.assertNotEqual(
+                        cluster,
+                        None,
+                        'Fetch of cluster post create has failed!'
+        )
 
     def testCreateWithUserConfig(self):
         """"
         Validates the cluster with custom config creation
         """
 
-        # verify add() response
-        new_cluster = ResourceManagersContainer.getClusterResourceManager().add(name="foo")
-        self.assertNotEqual(new_cluster, None, 'Cluster create has failed!')
+        # create custom cluster
+        new_cluster = ResourceManagersContainer\
+                            .getClusterResourceManager()\
+                            .add(name="foo")
 
-        # verify get of newly created cluster
-        cluster = ResourceManagersContainer.getClusterResourceManager().getOnly(name="foo")
-        self.assertNotEqual(cluster, None, 'Fetch of cluster post create has failed!')
+        # verify response
+        self.assertNotEqual(
+                        new_cluster,
+                        None,
+                        'Cluster create has failed!'
+        )
+
+        # fetch new cluster
+        cluster = ResourceManagersContainer\
+                            .getClusterResourceManager()\
+                            .getOnly(name="foo")
+
+        # verify existence
+        self.assertNotEqual(
+                        cluster,
+                        None,
+                        'Fetch of cluster post create has failed!'
+        )
 
     @requires.resources([params.Cluster])
     def testUpdate(self):
@@ -61,12 +92,21 @@ class ClusterTestsSuite(AbstractOvirtTestsSuite):
         Validates the cluster update
         """
 
-        cluster = ResourceManagersContainer.getClusterResourceManager().getOnly()
+        # fetch resource
+        cluster = ResourceManagersContainer\
+                            .getClusterResourceManager()\
+                            .getOnly()
 
+        # update
         cluster.set_description("TEST")
         cluster.update()
 
-        updated_cluster = ResourceManagersContainer.getClusterResourceManager().getOnly()
+        # fetch updated cluster
+        updated_cluster = ResourceManagersContainer\
+                            .getClusterResourceManager()\
+                            .getOnly()
+
+        # verify update
         self.assertEqual(
              updated_cluster.get_description(),
              "TEST",
