@@ -63,7 +63,7 @@ class ResourceFactory(Singleton):
         if isinstance(data, types.ListType):
             i = 1
             for item in data:
-                params_holder = ResourceFactory.__produceParamsHolder(typ, item)
+                params_holder = ResourceFactory.__produceParamsHolder(typ, item, **kwargs)
                 # TODO: implement creation strategy
                 if len(data) > 1:
                     params_holder.set_name(params_holder.get_name() + str(i))
@@ -71,7 +71,7 @@ class ResourceFactory(Singleton):
                 params_holders.append(params_holder)
             return params_holders
         else:
-            return ResourceFactory.__produceParamsHolder(typ, data)
+            return ResourceFactory.__produceParamsHolder(typ, data, **kwargs)
 
     @staticmethod
     def __produceParamsHolder(typ, item, **kwargs):

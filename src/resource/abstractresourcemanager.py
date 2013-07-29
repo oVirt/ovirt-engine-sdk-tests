@@ -114,7 +114,7 @@ class AbstractResourceManager(Singleton):
         @return: DataCenter
         """
 
-        resource = self.getOnly()
+        resource = self.getOnly(**kwargs)
         if not resource:
             params_holders = ResourceFactory.create(
                                         self.getType(),
@@ -126,11 +126,11 @@ class AbstractResourceManager(Singleton):
 
                 for params_holder in params_holders:
                     create_responses.append(
-                        collection.add(params_holder, **kwargs)
+                        collection.add(params_holder)
                     )
                 return create_responses
             else:
-                return collection.add(params_holders, **kwargs)
+                return collection.add(params_holders)
         return resource
 
     def _doGet(self, collection, get_only=False, **kwargs):
