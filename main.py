@@ -21,6 +21,7 @@ import unittest
 
 import src.tests.suites as testsuites
 from src.infrastructure.reflectionhelper import ReflectionHelper
+import time
 
 if __name__ == "__main__":
 
@@ -34,5 +35,6 @@ if __name__ == "__main__":
             for clazz_name in pyclbr.readmodule(modname).keys():
                 clazz = ReflectionHelper.getClass(modname + "." + clazz_name)
                 print "\nRunning tests from: {0}".format(clazz.__name__)
+                time.sleep(1)
                 suite = unittest.TestLoader().loadTestsFromTestCase(clazz)
                 unittest.TextTestRunner(verbosity=2).run(suite)
