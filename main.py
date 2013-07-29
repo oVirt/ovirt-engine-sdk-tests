@@ -19,7 +19,7 @@ import pkgutil
 import pyclbr
 import unittest
 
-import src.test.suites as testsuites
+import src.tests.suites as testsuites
 from src.infrastructure.reflectionhelper import ReflectionHelper
 
 if __name__ == "__main__":

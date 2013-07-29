@@ -17,7 +17,7 @@
 from ovirtsdk.xml import params
 from src.infrastructure.annotations import conflicts
 from src.resource.storagedomainresourcemanager import StorageDomainResourceManager
-from src.test.suites.abstractovirttestssuite import AbstractOvirtTestsSuite
+from src.infrastructure.test.abstractovirttestssuite import AbstractOvirtTestsSuite
 
 
 class StorageDomainTestsSuite(AbstractOvirtTestsSuite):

@@ -17,7 +17,7 @@
 from src.resource.clusterresourcemanager import ClusterResourceManager
 from ovirtsdk.xml import params
 from src.infrastructure.annotations import requires, conflicts, invoke, run
-from src.test.suites.abstractovirttestssuite import AbstractOvirtTestsSuite
+from src.infrastructure.test.abstractovirttestssuite import AbstractOvirtTestsSuite
 
 
 class ClusterTestsSuite(AbstractOvirtTestsSuite):
