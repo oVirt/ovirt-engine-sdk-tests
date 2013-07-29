@@ -17,6 +17,7 @@
 import time
 from src.errors.notfounderror import NotFoundError
 from src.errors.timeouterror import TimeoutError
+from copy import deepcopy
 
 class StatusUtils(object):
     '''
@@ -38,6 +39,8 @@ class StatusUtils(object):
         @raise NotFoundError: when destination object not found
         @raise TimeoutError: after ttl expires
         """
+
+        orig_ttl = deepcopy(ttl)
         while ttl > 0:
             wait_object = method(get_only=True, **kwargs)
             if not wait_object:
@@ -46,7 +49,7 @@ class StatusUtils(object):
                 return StatusUtils.wait(method, status, ttl, sleep, **kwargs)
             time.sleep(sleep)
             ttl -= sleep
-        raise TimeoutError(ttl)
+        raise TimeoutError(orig_ttl)
 
     @staticmethod
     def wait(method, status, ttl=240, sleep=2, **kwargs):
@@ -62,6 +65,8 @@ class StatusUtils(object):
         @raise NotFoundError: when destination object not found
         @raise TimeoutError: after ttl expires
         """
+
+        orig_ttl = deepcopy(ttl)
         while ttl > 0:
             wait_object = method(get_only=True, **kwargs)
             if not wait_object:
@@ -70,7 +75,7 @@ class StatusUtils(object):
                 return
             time.sleep(sleep)
             ttl -= sleep
-        raise TimeoutError(ttl)
+        raise TimeoutError(orig_ttl)
 
     @staticmethod
     def waitRemoved(method, ttl=240, sleep=2):
@@ -83,10 +88,12 @@ class StatusUtils(object):
         
         @raise TimeoutError: after ttl expires
         """
+
+        orig_ttl = deepcopy(ttl)
         while ttl > 0:
             wait_object = method(get_only=True)
             if not wait_object:
                 return
             time.sleep(sleep)
             ttl -= sleep
-        raise TimeoutError(ttl)
+        raise TimeoutError(orig_ttl)
