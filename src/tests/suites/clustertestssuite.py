@@ -26,27 +26,6 @@ class ClusterTestsSuite(AbstractOvirtTestsSuite):
     Cluster TestsSuite
     """
 
-
-####### pre/post test run #############
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-######## pre/post class run #############
-
-    @classmethod
-    def setUpClass(cls):
-        pass
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
-# ############### test/s ###############
-
     @run.ifGrateOrEqual(params.Version(major=3, minor=3, build_=0, revision=0))
     @conflicts.resources([params.Host, params.Cluster])
     @invoke.prerun([])

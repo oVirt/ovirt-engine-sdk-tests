@@ -21,30 +21,10 @@ from src.resource.resourcemanagerscontainer import ResourceManagersContainer
 
 
 class HostTestsSuite(AbstractOvirtTestsSuite):
+
     """
     Host TestsSuite
     """
-
-####### pre/post test run #############
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-######## pre/post class run #############
-
-    @classmethod
-    def setUpClass(cls):
-        pass
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
-# ############### test/s ###############
-
 
     @conflicts.resources([params.Host])
     def testCreate(self):

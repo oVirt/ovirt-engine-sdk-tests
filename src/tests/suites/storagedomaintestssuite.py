@@ -26,27 +26,6 @@ class StorageDomainTestsSuite(AbstractOvirtTestsSuite):
     StorageDomain TestsSuite
     """
 
-####### pre/post test run #############
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
-######## pre/post class run #############
-
-    @classmethod
-    def setUpClass(cls):
-        pass
-
-    @classmethod
-    def tearDownClass(cls):
-        pass
-
-# ############### test/s ###############
-
-
     @conflicts.resources([params.StorageDomain])
     def testCreate(self):
 
