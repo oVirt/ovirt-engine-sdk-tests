@@ -14,10 +14,10 @@
 # limitations under the License.
 
 
-from src.resource.clusterresourcemanager import ClusterResourceManager
 from ovirtsdk.xml import params
 from src.infrastructure.annotations import requires, conflicts, invoke, run
 from src.infrastructure.test.abstractovirttestssuite import AbstractOvirtTestsSuite
+from src.resource.resourcemanagerscontainer import ResourceManagersContainer
 
 
 class ClusterTestsSuite(AbstractOvirtTestsSuite):
@@ -26,10 +26,6 @@ class ClusterTestsSuite(AbstractOvirtTestsSuite):
     Cluster TestsSuite
     """
 
-    __clusterResourceManager = ClusterResourceManager()
-
-    def getClusterResourceManager(self):
-        return ClusterTestsSuite.__clusterResourceManager
 
 ####### pre/post test run #############
 
@@ -60,11 +56,11 @@ class ClusterTestsSuite(AbstractOvirtTestsSuite):
         Validates the cluster creation
         """
         # verify add() response
-        new_cluster = self.getClusterResourceManager().add()
+        new_cluster = ResourceManagersContainer.getClusterResourceManager().add()
         self.assertNotEqual(new_cluster, None, 'Cluster create has failed!')
 
         # verify get of newly created cluster
-        cluster = ClusterTestsSuite.__clusterResourceManager.get()
+        cluster = ResourceManagersContainer.getClusterResourceManager().getOnly()
         self.assertNotEqual(cluster, None, 'Fetch of cluster post create has failed!')
 
     def testCreateWithUserConfig(self):
@@ -73,11 +69,11 @@ class ClusterTestsSuite(AbstractOvirtTestsSuite):
         """
 
         # verify add() response
-        new_cluster = self.getClusterResourceManager().add(name="foo")
+        new_cluster = ResourceManagersContainer.getClusterResourceManager().add(name="foo")
         self.assertNotEqual(new_cluster, None, 'Cluster create has failed!')
 
         # verify get of newly created cluster
-        cluster = self.getClusterResourceManager().get(name="foo")
+        cluster = ResourceManagersContainer.getClusterResourceManager().getOnly(name="foo")
         self.assertNotEqual(cluster, None, 'Fetch of cluster post create has failed!')
 
     @requires.resources([params.Cluster])
@@ -86,12 +82,12 @@ class ClusterTestsSuite(AbstractOvirtTestsSuite):
         Validates the cluster update
         """
 
-        cluster = self.getClusterResourceManager().getOnly()
+        cluster = ResourceManagersContainer.getClusterResourceManager().getOnly()
 
         cluster.set_description("TEST")
         cluster.update()
 
-        updated_cluster = self.getClusterResourceManager().get()
+        updated_cluster = ResourceManagersContainer.getClusterResourceManager().getOnly()
         self.assertEqual(
              updated_cluster.get_description(),
              "TEST",
@@ -103,9 +99,9 @@ class ClusterTestsSuite(AbstractOvirtTestsSuite):
         Validates the cluster delete
         """
 
-        cluster = self.getClusterResourceManager().get()
+        cluster = ResourceManagersContainer.getClusterResourceManager().get()
 
         cluster.delete()
 
-        cluster = self.getClusterResourceManager().getOnly()
+        cluster = ResourceManagersContainer.getClusterResourceManager().getOnly()
         self.assertEqual(cluster, None, "cluster.delete() has failed")

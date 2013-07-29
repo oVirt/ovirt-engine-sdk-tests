@@ -16,8 +16,8 @@
 
 from ovirtsdk.xml import params
 from src.infrastructure.annotations import conflicts
-from src.resource.storagedomainresourcemanager import StorageDomainResourceManager
 from src.infrastructure.test.abstractovirttestssuite import AbstractOvirtTestsSuite
+from src.resource.resourcemanagerscontainer import ResourceManagersContainer
 
 
 class StorageDomainTestsSuite(AbstractOvirtTestsSuite):
@@ -25,11 +25,6 @@ class StorageDomainTestsSuite(AbstractOvirtTestsSuite):
     """
     StorageDomain TestsSuite
     """
-
-    __StorageDomainResourceManager = StorageDomainResourceManager()
-
-    def getStorageDomainResourceManager(self):
-        return StorageDomainTestsSuite.__StorageDomainResourceManager
 
 ####### pre/post test run #############
 
@@ -60,9 +55,9 @@ class StorageDomainTestsSuite(AbstractOvirtTestsSuite):
         """
 
         # verify add() response
-        new_storagedomain = self.getStorageDomainResourceManager().add()
+        new_storagedomain = ResourceManagersContainer.getStorageDomainResourceManager().add()
         self.assertNotEqual(new_storagedomain, None, 'StorageDomain create has failed!')
 
         # verify get of newly created cluster
-        storagedomain = self.getStorageDomainResourceManager().getOnly()
+        storagedomain = ResourceManagersContainer.getStorageDomainResourceManager().getOnly()
         self.assertNotEqual(storagedomain, None, 'StorageDomain of host post create has failed!')

@@ -16,19 +16,14 @@
 
 from ovirtsdk.xml import params
 from src.infrastructure.annotations import conflicts
-from src.resource.hostresourcemanager import HostResourceManager
 from src.infrastructure.test.abstractovirttestssuite import AbstractOvirtTestsSuite
+from src.resource.resourcemanagerscontainer import ResourceManagersContainer
 
 
 class HostTestsSuite(AbstractOvirtTestsSuite):
     """
     Host TestsSuite
     """
-
-    __hostResourceManager = HostResourceManager()
-
-    def getHostResourceManager(self):
-        return HostTestsSuite.__hostResourceManager
 
 ####### pre/post test run #############
 
@@ -58,9 +53,9 @@ class HostTestsSuite(AbstractOvirtTestsSuite):
         """
 
         # verify add() response
-        new_host = self.getHostResourceManager().add()
+        new_host = ResourceManagersContainer.getHostResourceManager().add()
         self.assertNotEqual(new_host, None, 'Host create has failed!')
 
         # verify get of newly created cluster
-        host = self.getHostResourceManager().getOnly()
+        host = ResourceManagersContainer.getHostResourceManager().getOnly()
         self.assertNotEqual(host, None, 'Fetch of host post create has failed!')
