@@ -19,7 +19,7 @@ from src.errors.resourcemanagernotfounderror import ResourceManagerNotFoundError
 
 class resources(object):
     """
-    'requires.resources' annotation, verifies  resource/s absence
+    'conflicts.resources' annotation, verifies  resource/s absence
     in the system upon method execution
 
     @param params: list of resources
@@ -27,7 +27,7 @@ class resources(object):
 
     def __init__(self, params):
         """
-        'requires.resources' annotation, verifies  resource/s absence
+        'conflicts.resources' annotation, verifies  resource/s absence
         in the system upon method execution
 
         @param params: list of resources
@@ -44,7 +44,7 @@ class resources(object):
                     rm_instance = rm_class()
                     if rm_instance.getOnly():
                         rm_instance.remove()
-                        # TODO: use **kwargs for private init
+                        # TODO: use **kwargs for private remove
                 else:
                     raise ResourceManagerNotFoundError(rm)
             return original_func(*args, **kwargs)
